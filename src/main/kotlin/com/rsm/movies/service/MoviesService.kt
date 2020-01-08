@@ -94,7 +94,7 @@ class MoviesService() {
         val movie = MovieDto()
         val attributes = json.split(",").toTypedArray()
         for (attribute in attributes) {
-            if (attribute.contains("title")) {
+            if (!attribute.contains("original_title") && attribute.contains("title")) {
                 val splited = attribute.split(":").toTypedArray()
                 val originalTitle = splited[1].substring(1, splited[1].length - 1)
                 movie.originalTitle = originalTitle
