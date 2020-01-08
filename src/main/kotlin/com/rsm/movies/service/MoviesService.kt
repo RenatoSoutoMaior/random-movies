@@ -51,8 +51,74 @@ class MoviesService() {
         return "https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=${page}"
     }
 
+    private fun getMovieById(json: String): MovieDto? {
+        val attributes = json.split(",").toTypedArray()
+        return getMovie(attributes)
+    }
+
+    private fun getMovieByTopRated(json: String): MovieDto? {
+        val attributes = json.split("[{").toTypedArray()[1].split(",").toTypedArray()
+        return getMovie(attributes)
+    }
+
+    private fun getMovie(attributes: Array<String>): MovieDto? {
+        val movies = ArrayList<MovieDto>()
+        var movie = MovieDto()
+        var countTitle = 0
+        var countDate = 0
+        var countPoster = 0
+
+        for (attribute in attributes) {
+            val splited = attribute.split(":").toTypedArray()
+
+            if (countTitle == 0 && !attribute.contains("original_title") && attribute.contains("title")) {
+                val splitedTitle = mutableListOf<String>()
+
+                for (i in 1 until splited.size) {
+                    splitedTitle += splited[i].substring(1).plus(" ").split("\"")
+                }
+
+                for (title in splitedTitle) {
+                    movie.title += title
+                }
+
+                movie.title = movie.title.trim()
+                countTitle += 1
+            }
+
+            if (countDate == 0 && attribute.contains("release_date")) {
+                val releaseDate = splited[1].substring(1).split("\"")[0]
+                movie.releaseDate = (LocalDate.parse(releaseDate, FORMATTER))
+                countDate += 1
+            }
+
+            if (countPoster == 0 && attribute.contains("poster_path")) {
+                val posterPath = splited[1].split(".")[0].split("/")[splited.size - 1].plus(".jpg")
+                movie.posterPath = ("http://image.tmdb.org/t/p/w185/$posterPath")
+                countPoster += 1
+            }
+
+            if (countTitle == 1 && countDate == 1 && countPoster == 1) {
+                movies.add(MovieDto(movie.title, movie.releaseDate, movie.posterPath))
+                movie = MovieDto()
+                countTitle = 0
+                countDate = 0
+                countPoster = 0
+            }
+        }
+
+        val movieDto = movies[Random().nextInt(movies.size)]
+
+        if (movieDto.title.isEmpty()) {
+            return getMovie(attributes)
+        }
+
+        return movieDto
+    }
+
     private fun getJSON(endpoint: String): String? {
         var httpURLConnection: HttpURLConnection? = null
+
         try {
             val url = URL(endpoint)
             httpURLConnection = url.openConnection() as HttpURLConnection
@@ -63,15 +129,17 @@ class MoviesService() {
             httpURLConnection.connectTimeout = TIMEOUT
             httpURLConnection.readTimeout = TIMEOUT
             httpURLConnection.connect()
+
             when (httpURLConnection.responseCode) {
                 200, 201 -> {
-                    val br = BufferedReader(InputStreamReader(
-                            httpURLConnection.inputStream))
+                    val br = BufferedReader(InputStreamReader(httpURLConnection.inputStream))
                     val sb = StringBuilder()
                     var line: String?
+
                     while (br.readLine().also { line = it } != null) {
                         sb.append(line).append("\n")
                     }
+
                     br.close()
                     return sb.toString()
                 }
@@ -89,75 +157,4 @@ class MoviesService() {
         }
         return null
     }
-
-    private fun getMovieById(json: String): MovieDto? {
-        val movie = MovieDto()
-        var countTitle = 0
-        var countDate = 0
-        var countPoster = 0
-        val attributes = json.split(",").toTypedArray()
-        for (attribute in attributes) {
-            if (countTitle == 0 && !attribute.contains("original_title") && attribute.contains("title")) {
-                val splited = attribute.split(":").toTypedArray()
-                val title = splited[1].substring(1, splited[1].length - 1)
-                movie.title = title
-                countTitle += 1
-            }
-            if (countDate == 0 && attribute.contains("release_date")) {
-                val splited = attribute.split(":").toTypedArray()
-                val releaseDate = splited[1].substring(1, splited[1].length - 1)
-                movie.releaseDate = (LocalDate.parse(releaseDate, FORMATTER))
-                countDate += 1
-            }
-            if (countPoster == 0 && attribute.contains("poster_path")) {
-                val splited = attribute.split(":").toTypedArray()
-                val posterPath = splited[1].substring(1, splited[1].length - 1)
-                movie.posterPath = ("http://image.tmdb.org/t/p/w185$posterPath")
-                countPoster += 1
-            }
-            if (countTitle == 1 && countDate == 1 && countPoster == 1) {
-                return movie
-            }
-        }
-        return movie
-    }
-
-    private fun getMovieByTopRated(json: String): MovieDto? {
-        val movies = ArrayList<MovieDto>()
-        var movie = MovieDto()
-        var countTitle = 0
-        var countDate = 0
-        var countPoster = 0
-        val attributes = json.split("[{").toTypedArray()[1].split(",").toTypedArray()
-        for (attribute in attributes) {
-            if (countTitle == 0 && !attribute.contains("original_title") && attribute.contains("title")) {
-                val splited = attribute.split(":").toTypedArray()
-                val title = splited[1].substring(1, splited[1].length - 1)
-                movie.title = title
-                countTitle += 1
-            }
-            if (countDate == 0 && attribute.contains("release_date")) {
-                val splited = attribute.split(":").toTypedArray()
-                val releaseDate = splited[1].substring(1, 11)
-                movie.releaseDate = (LocalDate.parse(releaseDate, FORMATTER))
-                countDate += 1
-            }
-            if (countPoster == 0 && attribute.contains("poster_path")) {
-                val splited = attribute.split(":").toTypedArray()
-                val posterPath = splited[1].split(".")[0].substring(2).plus(".jpg")
-                movie.posterPath = ("http://image.tmdb.org/t/p/w185$posterPath")
-                countPoster += 1
-            }
-            if (countTitle == 1 && countDate == 1 && countPoster == 1) {
-                movies.add(MovieDto(movie.title, movie.releaseDate, movie.posterPath))
-                movie = MovieDto()
-                countTitle = 0
-                countDate = 0
-                countPoster = 0
-            }
-        }
-
-        return movies[Random().nextInt(movies.size - 1)]
-    }
-
 }
