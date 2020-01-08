@@ -12,8 +12,13 @@ import org.springframework.web.bind.annotation.RestController
 class MoviesController(val moviesService: MoviesService) {
 
     @GetMapping("/random-movie")
-    fun randomMovie(): ResponseEntity<Any> {
-        return ResponseEntity(moviesService.randomMovie(), HttpStatus.OK)
+    fun getRandomMovie(): ResponseEntity<Any> {
+        return ResponseEntity(moviesService.getRandomMovie(), HttpStatus.OK)
+    }
+
+    @GetMapping("/top-rated")
+    fun getTopRatedMovie(): ResponseEntity<Any> {
+        return ResponseEntity(moviesService.getTopRatedMovie(), HttpStatus.OK)
     }
 
 }
