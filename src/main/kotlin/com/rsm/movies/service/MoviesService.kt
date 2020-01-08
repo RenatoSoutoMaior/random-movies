@@ -96,8 +96,8 @@ class MoviesService() {
         for (attribute in attributes) {
             if (!attribute.contains("original_title") && attribute.contains("title")) {
                 val splited = attribute.split(":").toTypedArray()
-                val originalTitle = splited[1].substring(1, splited[1].length - 1)
-                movie.originalTitle = originalTitle
+                val title = splited[1].substring(1, splited[1].length - 1)
+                movie.title = title
             }
             if (attribute.contains("release_date")) {
                 val splited = attribute.split(":").toTypedArray()
@@ -123,8 +123,8 @@ class MoviesService() {
         for (attribute in attributes) {
             if (!attribute.contains("original_title") && attribute.contains("title") && countTitle == 0) {
                 val splited = attribute.split(":").toTypedArray()
-                val originalTitle = splited[1].substring(1, splited[1].length - 1)
-                movie.originalTitle = originalTitle
+                val title = splited[1].substring(1, splited[1].length - 1)
+                movie.title = title
                 countTitle += 1
             }
             if (attribute.contains("release_date") && countDate == 0) {
@@ -140,7 +140,7 @@ class MoviesService() {
                 countPoster += 1
             }
             if (countTitle == 1 && countDate == 1 && countPoster == 1) {
-                movies.add(MovieDto(movie.originalTitle, movie.releaseDate, movie.posterPath))
+                movies.add(MovieDto(movie.title, movie.releaseDate, movie.posterPath))
                 movie = MovieDto()
                 countTitle = 0
                 countDate = 0
