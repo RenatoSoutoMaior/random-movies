@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar target/movies-1.0.0.war --port $PORT target/*.war
+web: build/install/movies/bin/movies
