@@ -11,31 +11,18 @@
         var vm = this;
 
         vm.movies = [];
-
-        vm.getTopRatedMovie = getTopRatedMovie;
-        vm.getRandomMovie = getRandomMovie;
+        vm.getTopRated = getTopRated;
 
         init();
 
         function init() {
-            getTopRatedMovie();
+            getTopRated();
         }
 
-        function getTopRatedMovie() {
+        function getTopRated() {
             $http({
                 method: 'GET',
                 url: '/movies/top-rated'
-            }).then(function successCallback(response) {
-                vm.movies = response.data;
-                console.log(vm.movies);
-            }, function errorCallback(response) {
-            });
-        }
-
-        function getRandomMovie() {
-            $http({
-                method: 'GET',
-                url: '/movies/random-movie'
             }).then(function successCallback(response) {
                 vm.movies = response.data;
                 console.log(vm.movies);

@@ -12,12 +12,13 @@ import java.net.URL
 import java.util.logging.Level
 import java.util.logging.Logger
 
-
 @Service
-abstract class MoviesService {
+abstract class MovieService {
 
-    val API_KEY = "7beb48e03a83a4f72abec70f9c474deb"
-    val TIMEOUT = 5000
+    companion object {
+        const val API_KEY = "7beb48e03a83a4f72abec70f9c474deb"
+        const val TIMEOUT = 5000
+    }
 
     abstract fun getMovie(): MovieDto?
 

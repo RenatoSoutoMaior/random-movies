@@ -1,0 +1,21 @@
+body {
+    background-image: url("../image/film-background.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.thumbnail {
+    background-color: #222222;
+    border: 3px solid;
+}
+
+.thumbnail .caption {
+    color: white;
+}
+
+.thumbnail .caption .btn {
+    margin-top: 10px;
+    color: white;
+    background-color: black;
+    border: 2px solid white;
+}
