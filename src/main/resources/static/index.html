@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <script src="js/angular.js"></script>
+    <script src="app/app.module.js"></script>
+    <script src="app/movies.controller.js"></script>
+</head>
+<body ng-app="app" ng-controller="MoviesController as vm">
+<div class="container" style="margin-top: 20px;">
+    <nav class="row navbar navbar-inverse">
+        <h1 style="text-align: center; color: white; padding-bottom: 10px;">{{vm.movies.title}} ({{vm.movies.release_year}})</h1>
+    </nav>
+</div>
+<div class="text-center">
+    <a><img class="img-fluid" src="http://image.tmdb.org/t/p/w342{{vm.movies.poster_path}}" alt="vm.movies.title"></a>
+</div>
+</body>
+</html>

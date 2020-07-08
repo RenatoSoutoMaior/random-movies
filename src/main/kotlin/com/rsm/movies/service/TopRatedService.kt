@@ -3,7 +3,8 @@ package com.rsm.movies.service
 import com.rsm.movies.domain.MovieDto
 import org.json.simple.JSONObject
 import org.springframework.stereotype.Service
-import java.util.Random
+import java.util.*
+import kotlin.collections.ArrayList
 
 @Service
 class TopRatedService : MoviesService() {
@@ -28,6 +29,9 @@ class TopRatedService : MoviesService() {
         var countTitle = 0
         var countDate = 0
         var countPoster = 0
+        var countVoteAverage = 0
+        var countOverview = 0
+        var countBackdrop = 0
 
         for (attribute in attributes) {
             val splited = attribute.split(":").toTypedArray()
@@ -48,8 +52,8 @@ class TopRatedService : MoviesService() {
             }
 
             if (countDate == 0 && attribute.contains("release_date")) {
-                val releaseDate = splited[1].substring(1).split("\"")[0]
-                movie.release_date = releaseDate
+                val releaseYear = splited[1].substring(1).split("-")[0]
+                movie.release_year = releaseYear
                 countDate += 1
             }
 
@@ -59,12 +63,31 @@ class TopRatedService : MoviesService() {
                 countPoster += 1
             }
 
-            if (countTitle == 1 && countDate == 1 && countPoster == 1) {
+            if (countVoteAverage == 0 && attribute.contains("vote_average")) {
+                movie.vote_average = splited[1]
+                countVoteAverage += 1
+            }
+
+            if (countOverview == 0 && attribute.contains("overview")) {
+                movie.overview = splited[1]
+                countOverview += 1
+            }
+
+            if (countBackdrop == 0 && attribute.contains("backdrop_path")) {
+                val backdropPath = splited[1].split(".")[0].split("/")[splited.size - 1].plus(".jpg")
+                movie.backdrop_path = ("/$backdropPath")
+                countBackdrop += 1
+            }
+
+            if (countTitle == 1 && countDate == 1 && countPoster == 1 && countVoteAverage == 1 && countOverview == 1 && countBackdrop == 1) {
                 movies.add(movie)
                 movie = MovieDto()
                 countTitle = 0
                 countDate = 0
                 countPoster = 0
+                countVoteAverage = 0
+                countOverview = 0
+                countBackdrop = 0
             }
         }
 
